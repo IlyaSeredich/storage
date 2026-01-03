@@ -1,0 +1,94 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    networks:
+      - app-network
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USER}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+    ports:
+      - '5555:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    networks:
+      - app-network
+    restart: unless-stopped
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    command: server ~/minio --console-address :9090
+    ports:
+      - '9090:9090'
+      - '9000:9000'
+    volumes:
+      - minio_data:/minio
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  elasticsearch:
+    image: elasticsearch:9.0.2
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+
+  kibana:
+    image: kibana:9.0.2
+    container_name: kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    image: elastic/filebeat:9.0.3
+    container_name: filebeat
+    restart: unless-stopped
+    user: root
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./logs:/app/logs
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+
+networks:
+  app-network:
+    driver: bridge
+  elk:
+    driver: bridge
+
+
+volumes:
+  postgres_data:
+  minio_data:
+  redis_data:
