@@ -248,7 +248,6 @@ public class ResourceServiceImpl implements ResourceService {
         }
     }
 
-    //TODO Resolve this method
     private List<FileResponseDto> uploadValidatedFiles(String fullParentPath, List<MultipartFile> multipartFileList) {
         List<FileResponseDto> fileResponseDtoList = new ArrayList<>();
 

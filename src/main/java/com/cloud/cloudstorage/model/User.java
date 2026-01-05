@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Table(name = "users")
+@Table(schema = "storage", name = "users")
 @Entity
 @Getter
 @Setter
@@ -21,7 +21,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
     @ManyToMany
-    @JoinTable(name = "users_roles",
+    @JoinTable(
+            schema = "storage",
+            name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
