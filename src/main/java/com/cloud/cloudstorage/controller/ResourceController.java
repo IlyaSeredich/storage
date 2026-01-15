@@ -1,17 +1,15 @@
 package com.cloud.cloudstorage.controller;
 
-import com.cloud.cloudstorage.dto.*;
+import com.cloud.cloudstorage.dto.BaseResourceResponseDto;
+import com.cloud.cloudstorage.dto.FileResponseDto;
+import com.cloud.cloudstorage.dto.FileUploadDto;
+import com.cloud.cloudstorage.dto.StreamResourceDto;
 import com.cloud.cloudstorage.service.ResourceService;
 import com.cloud.cloudstorage.validation.ValidDirectoryPath;
 import com.cloud.cloudstorage.validation.ValidPath;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -30,24 +28,11 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.util.List;
 
-@ApiResponses({
-        @ApiResponse(
-                responseCode = "500",
-                description = "Unknown exception",
-                content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(implementation = ErrorResponseDto.class)
-                )
-        ),
-        @ApiResponse(
-                responseCode = "401",
-                description = "Unauthorized user",
-                content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(implementation = ErrorResponseDto.class)
-                )
-        )
-}
+@ApiResponses(
+        {
+                @ApiResponse(responseCode = "500", description = "Unknown exception"),
+                @ApiResponse(responseCode = "401", description = "Unauthorized user")
+        }
 )
 @Tag(name = "Resource API", description = "Endpoints for general actions with files and directories")
 @SecurityRequirement(name = "cookieAuth")
@@ -61,68 +46,12 @@ public class ResourceController {
     @PostMapping
     @Operation(
             summary = "Upload resource",
-            description = "Uploads one or more files to the specified path on the server. Requires authentication.",
-            parameters = {
-                    @Parameter(
-                            name = "path",
-                            description = "Path where the uploaded files will be stored. Must not be empty and must end with a slash '/'.",
-                            required = true,
-                            example = "example-dir1/example-dir2/",
-                            in = ParameterIn.QUERY
-                    )
-            },
-            requestBody = @RequestBody(
-                    description = "Uploading resource",
-                    required = true,
-                    content = @Content(
-                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-                            schema = @Schema(implementation = FileUploadDto.class)
-                    )
-            ),
+            parameters = { @Parameter(name = "path", required = true, in = ParameterIn.QUERY)},
             responses = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            description = "Uploading completed",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(
-                                            schema = @Schema(implementation = BaseResourceResponseDto.class)
-                                    ),
-                                    examples = {
-                                            @ExampleObject(
-                                                    name = "Example for uploaded file",
-                                                    value = """
-                                                            [
-                                                                {
-                                                                    "path":"example-dir/file.txt",
-                                                                    "name":"file.txt",
-                                                                    "type":"FILE",
-                                                                    "size":1234
-                                                                }
-                                                            ]
-                                                            """
-                                            )
-                                    }
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid request body",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "Resource already exists",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    )
+                    @ApiResponse(responseCode = "201", description = "Uploading completed"),
+                    @ApiResponse(responseCode = "400", description = "Invalid request body"),
+                    @ApiResponse(responseCode = "409", description = "Resource already exists")
             }
-
     )
     public ResponseEntity<List<FileResponseDto>> upload(
             @RequestParam
@@ -142,63 +71,10 @@ public class ResourceController {
     @GetMapping("/search")
     @Operation(
             summary = "Search resource",
-            description = "Searches for resources (files and directories) that match the given query string.",
-            parameters = {
-                    @Parameter(
-                            name = "query",
-                            description = "Search query used to find matching resources by name",
-                            required = true,
-                            example = "file.txt",
-                            in = ParameterIn.QUERY
-                    )
-            },
+            parameters = {@Parameter(name = "query", required = true, in = ParameterIn.QUERY)},
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Searching completed",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(
-                                            schema = @Schema(implementation = BaseResourceResponseDto.class)
-                                    ),
-                                    examples = {
-                                            @ExampleObject(
-                                                    name = "Example for file",
-                                                    value = """
-                                                            [
-                                                                {
-                                                                    "path":"example-dir/file.txt",
-                                                                    "name":"file.txt",
-                                                                    "type":"FILE",
-                                                                    "size":1234
-                                                                }
-                                                            ]
-                                                            """
-                                            ),
-                                            @ExampleObject(
-                                                    name = "Example for directory",
-                                                    value = """
-                                                            [
-                                                                {
-                                                                    "path":"example-dir/",
-                                                                    "name":"example-dir2",
-                                                                    "type":"DIRECTORY"
-                                                                }
-                                                            ]
-                                                            """
-                                            )
-
-                                    }
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid request data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    )
+                    @ApiResponse(responseCode = "200", description = "Searching completed"),
+                    @ApiResponse(responseCode = "400", description = "Invalid request data")
             }
     )
     public ResponseEntity<List<BaseResourceResponseDto>> search(
@@ -215,78 +91,14 @@ public class ResourceController {
             summary = "Move/rename resource",
             description = "Moves or renames a resource. Resource types must match: file can't be renamed to directory and vice versa.",
             parameters = {
-                    @Parameter(
-                            name = "from",
-                            description = "Full resources path. Must not be empty. If it is a directory, must end with '/'",
-                            required = true,
-                            example = "example-dir/file.txt",
-                            in = ParameterIn.QUERY
-                    ),
-                    @Parameter(
-                            name = "to",
-                            description = "Path, that will be a new one. Must not be empty. If it is a directory, must end with '/'",
-                            required = true,
-                            example = "example-dir2/file.txt",
-                            in = ParameterIn.QUERY
-                    )
+                    @Parameter(name = "from", required = true, in = ParameterIn.QUERY),
+                    @Parameter(name = "to", required = true, in = ParameterIn.QUERY)
             },
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Moving/renaming completed",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BaseResourceResponseDto.class),
-                                    examples = {
-                                            @ExampleObject(
-                                                    name = "Example for file",
-                                                    value = """
-                                                                {
-                                                                    "path":"example-dir2/file.txt",
-                                                                    "name":"file.txt",
-                                                                    "type":"FILE",
-                                                                    "size":1234
-                                                                }
-                                                            """
-                                            ),
-                                            @ExampleObject(
-                                                    name = "Example for directory",
-                                                    value = """
-                                                                {
-                                                                    "path":"example-dir/",
-                                                                    "name":"example-dir2",
-                                                                    "type":"DIRECTORY"
-                                                                }
-                                                            """
-                                            )
-
-                                    }
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid path",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Resource not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "Resource with target path 'to' already exists",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    )
+                    @ApiResponse(responseCode = "200", description = "Moving/renaming completed"),
+                    @ApiResponse(responseCode = "400", description = "Invalid path"),
+                    @ApiResponse(responseCode = "404", description = "Resource not found"),
+                    @ApiResponse(responseCode = "409", description = "Resource with target path 'to' already exists")
             }
     )
     public ResponseEntity<BaseResourceResponseDto> move(
@@ -310,48 +122,12 @@ public class ResourceController {
             summary = "Download resource",
             description = "Downloads a file from the server. Returns binary content with Content-Disposition: attachment.",
             parameters = {
-                    @Parameter(
-                            name = "path",
-                            description = "Full resources path. Must not be empty. If it is a directory, must end with '/'",
-                            example = "example-dir/file.txt",
-                            in = ParameterIn.QUERY
-                    )
+                    @Parameter(name = "path", in = ParameterIn.QUERY)
             },
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Downloading completed",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
-                                    schema = @Schema(
-                                            type = "string",
-                                            format = "binary",
-                                            description = "Binary file content"
-                                    ),
-                                    examples = {
-                                            @ExampleObject(
-                                                    name = "File download example",
-                                                    summary = "A binary file is returned with Content-Type: application/octet-stream and Content-Disposition: attachment"
-                                            )
-                                    }
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid path",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Resource not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    )
+                    @ApiResponse(responseCode = "200", description = "Downloading completed"),
+                    @ApiResponse(responseCode = "400", description = "Invalid path"),
+                    @ApiResponse(responseCode = "404", description = "Resource not found")
             }
     )
     public ResponseEntity<StreamingResponseBody> download(
@@ -372,36 +148,11 @@ public class ResourceController {
     @DeleteMapping
     @Operation(
             summary = "Delete resource",
-            description = "Deletes a resource (file or directory) by its path. If it is a directory, must end with '/'",
-            parameters = {
-                    @Parameter(
-                            name = "path",
-                            description = "Full resources path. Must not be empty. If it is a directory, must end with '/'",
-                            example = "example-dir/file.txt",
-                            in = ParameterIn.QUERY
-                    )
-            },
+            parameters = {@Parameter(name = "path", in = ParameterIn.QUERY)},
             responses = {
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Resource deleted successfully. No content is returned."
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid path",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Resource not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    )
+                    @ApiResponse(responseCode = "204", description = "Resource deleted successfully. No content is returned."),
+                    @ApiResponse(responseCode = "400", description = "Invalid path"),
+                    @ApiResponse(responseCode = "404", description = "Resource not found")
             }
     )
     public ResponseEntity<Void> delete(
@@ -419,65 +170,11 @@ public class ResourceController {
     @GetMapping
     @Operation(
             summary = "Get resources details",
-            description = "Returns detailed information about a resource (file or directory) by its path.",
-            parameters = {
-                    @Parameter(
-                            name = "path",
-                            description = "Full resources path. Must not be empty. If it is a directory, must end with '/'",
-                            example = "example-dir/file.txt",
-                            in = ParameterIn.QUERY
-                    )
-            },
+            parameters = {@Parameter(name = "path", in = ParameterIn.QUERY)},
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Resource details received successfully.",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BaseResourceResponseDto.class),
-                                    examples = {
-                                            @ExampleObject(
-                                                    name = "Example for file",
-                                                    value = """
-                                                                {
-                                                                    "path":"example-dir2/file.txt",
-                                                                    "name":"file.txt",
-                                                                    "type":"FILE",
-                                                                    "size":1234
-                                                                }
-                                                            """
-                                            ),
-                                            @ExampleObject(
-                                                    name = "Example for directory",
-                                                    value = """
-                                                                {
-                                                                    "path":"example-dir/",
-                                                                    "name":"example-dir2",
-                                                                    "type":"DIRECTORY"
-                                                                }
-                                                            """
-                                            )
-
-                                    }
-                            )
-
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid path",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Resource not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
-                            )
-                    )
+                    @ApiResponse(responseCode = "200", description = "Resource details received successfully."),
+                    @ApiResponse(responseCode = "400", description = "Invalid path"),
+                    @ApiResponse(responseCode = "404", description = "Resource not found")
             }
     )
     public ResponseEntity<BaseResourceResponseDto> get(
