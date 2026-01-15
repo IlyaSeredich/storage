@@ -17,7 +17,11 @@ jobs:
           -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
     - name: Build Docker image
-      run: docker build -t ilya1626/storage:latest .
+      run: |
+        IMAGE_TAG=$(date +%Y%m%d%H%M) 
+        docker build -t ilya1626/storage:${IMAGE_TAG} -t ilya1626/storage:latest .
 
     - name: Push Docker image
-      run: docker push ilya1626/storage:latest
+      run: |
+        docker push ilya1626/storage:${IMAGE_TAG} 
+        docker push ilya1626/storage:latest
