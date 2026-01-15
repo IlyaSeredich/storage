@@ -1,6 +1,8 @@
 package com.cloud.cloudstorage.exception;
 
-public class MinioResourceAlreadyExistsException extends RuntimeException {
+import com.cloud.cloudstorage.exception.marker.ExpectedException;
+
+public class MinioResourceAlreadyExistsException extends RuntimeException implements ExpectedException {
     private static final String MESSAGE_TEMPLATE = "Resource %s already exists";
 
     public MinioResourceAlreadyExistsException(String fullPath) {

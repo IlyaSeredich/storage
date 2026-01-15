@@ -1,5 +1,6 @@
 package com.cloud.cloudstorage.aspect;
 
+import com.cloud.cloudstorage.exception.marker.ExpectedException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -17,12 +18,16 @@ public class ExceptionLoggingAspect {
 
     @AfterThrowing(throwing = "ex", pointcut = "businessLogicMethods()")
     public void logException(JoinPoint jp, Exception ex) {
+        if(ex instanceof ExpectedException) {
+            return;
+        }
+
         String methodName = jp.getSignature().getName();
         String className = jp.getTarget().getClass().getSimpleName();
 
-        log.error("Exception in {}.{}. Exception message: {}",
+        log.error("Exception in {}.{} ",
                 className,
                 methodName,
-                ex.getMessage());
+                ex);
     }
 }

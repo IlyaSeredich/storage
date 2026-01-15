@@ -65,7 +65,8 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID"))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                        .sessionFixation().migrateSession())
+                        .sessionFixation().migrateSession()
+                )
                 .userDetailsService(myUserDetailsService)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

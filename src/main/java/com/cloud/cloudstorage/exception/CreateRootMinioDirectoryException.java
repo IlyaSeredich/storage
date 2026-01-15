@@ -1,6 +1,8 @@
 package com.cloud.cloudstorage.exception;
 
-public class CreateRootMinioDirectoryException extends RuntimeException {
+import com.cloud.cloudstorage.exception.marker.ExpectedException;
+
+public class CreateRootMinioDirectoryException extends RuntimeException implements ExpectedException {
     private static final String MESSAGE = "Failed creating root Minio directory";
 
     public CreateRootMinioDirectoryException() {

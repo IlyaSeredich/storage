@@ -1,6 +1,8 @@
 package com.cloud.cloudstorage.exception;
 
-public class UnauthorizedException extends RuntimeException{
+import com.cloud.cloudstorage.exception.marker.ExpectedException;
+
+public class UnauthorizedException extends RuntimeException implements ExpectedException {
     private static final String MESSAGE = "Full authentication is required";
 
     public UnauthorizedException() {

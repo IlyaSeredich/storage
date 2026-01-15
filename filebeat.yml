@@ -2,7 +2,7 @@ filebeat.inputs:
 - type: filestream
   id: my-springboot-json-logs
   paths:
-    - /app/logs/app.json
+    - /app/logs/app.log
   parsers:
     - ndjson:
         keys_under_root: true
@@ -13,3 +13,4 @@ output.elasticsearch:
 
 setup.kibana:
   host: "kibana:5601"
+

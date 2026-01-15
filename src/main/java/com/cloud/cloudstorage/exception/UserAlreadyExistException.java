@@ -1,6 +1,8 @@
 package com.cloud.cloudstorage.exception;
 
-public class UserAlreadyExistException extends RuntimeException {
+import com.cloud.cloudstorage.exception.marker.ExpectedException;
+
+public class UserAlreadyExistException extends RuntimeException implements ExpectedException {
     private static final String MESSAGE_TEMPLATE = "User with username %s already exists";
 
     public UserAlreadyExistException(String username) {

@@ -51,6 +51,8 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
     networks:
       - elk
 
@@ -79,6 +81,21 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    command: >
+      sh -c "chmod 644 /usr/share/filebeat/filebeat.yml && filebeat -e -c /usr/share/filebeat/filebeat.yml"
+
+  storage:
+    image: ilya1626/storage
+    container_name: storage
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - app-network
+      - elk
+    ports:
+      - "8080:8080"
+
 
 
 networks:
@@ -92,3 +109,4 @@ volumes:
   postgres_data:
   minio_data:
   redis_data:
+  elastic_data:

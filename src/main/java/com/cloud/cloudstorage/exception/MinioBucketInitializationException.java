@@ -1,6 +1,8 @@
 package com.cloud.cloudstorage.exception;
 
-public class MinioBucketInitializationException extends RuntimeException {
+import com.cloud.cloudstorage.exception.marker.ExpectedException;
+
+public class MinioBucketInitializationException extends RuntimeException implements ExpectedException {
     private static final String MESSAGE = "Failed initialization minio bucket";
 
     public MinioBucketInitializationException(

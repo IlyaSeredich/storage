@@ -4,8 +4,8 @@ import com.cloud.cloudstorage.dto.ErrorResponseDto;
 import com.cloud.cloudstorage.dto.UserAuthDto;
 import com.cloud.cloudstorage.dto.UserCreateDto;
 import com.cloud.cloudstorage.dto.UserResponseDto;
-import com.cloud.cloudstorage.service.UserAccountService;
 import com.cloud.cloudstorage.service.CurrentUserService;
+import com.cloud.cloudstorage.service.UserAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
+@Slf4j
 public class UserController {
     private final CurrentUserService currentUserService;
     private final UserAccountService userAccountService;

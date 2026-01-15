@@ -1,6 +1,8 @@
 package com.cloud.cloudstorage.exception;
 
-public class MinioDownloadResourceException extends RuntimeException {
+import com.cloud.cloudstorage.exception.marker.ExpectedException;
+
+public class MinioDownloadResourceException extends RuntimeException implements ExpectedException {
     private static final String MESSAGE = "Downloading failed";
 
     public MinioDownloadResourceException() {
