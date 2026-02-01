@@ -4,7 +4,7 @@
 
 ## 🚀 Технологии
 
-- **Backend**: Spring Boot 3.4.4, Java 21
+- **Backend**: Spring Boot 3.5.5, Java 21
 - **База данных**: PostgreSQL с Liquibase миграциями
 - **Хранилище файлов**: MinIO (S3-совместимое)
 - **Аутентификация**: Spring Security с сессиями в Redis
@@ -47,7 +47,7 @@ src/
 │   ├── service/        # Бизнес-логика
 │   └── validation/     # Кастомные валидаторы
 ├── main/resources/
-│   ├── db/changelog/   # Liquibase миграции
+│   ├── db/migration/   # Flyway миграции
 │   └── application.properties
 └── test/               # Тесты с TestContainers
 ```
@@ -97,7 +97,9 @@ DB_PASSWORD=your_password
 MINIO_BUCKET=your_bucket_name
 MINIO_ACCESS_KEY=your_access_key
 MINIO_SECRET_KEY=your_secret_key
-MINIO_BUCKET=cloud-storage-bucket
+MINIO_BUCKET=your_minio_bucket_name
+SSL_KEY_STORE_PATH=your_key_store_path
+SSL_KEY_STORE_PASSWORD=your_key_store_password
 ```
 
 ## 📚 API Документация
