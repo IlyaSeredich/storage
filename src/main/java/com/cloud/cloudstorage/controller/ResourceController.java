@@ -43,7 +43,6 @@ import java.util.List;
 public class ResourceController {
     private final ResourceService resourceService;
 
-    @PostMapping
     @Operation(
             summary = "Upload resource",
             parameters = { @Parameter(name = "path", required = true, in = ParameterIn.QUERY)},
@@ -53,6 +52,7 @@ public class ResourceController {
                     @ApiResponse(responseCode = "409", description = "Resource already exists")
             }
     )
+    @PostMapping
     public ResponseEntity<List<FileResponseDto>> upload(
             @RequestParam
             @NotBlank(message = "Param \"path\" should not be empty")
@@ -68,7 +68,6 @@ public class ResourceController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/search")
     @Operation(
             summary = "Search resource",
             parameters = {@Parameter(name = "query", required = true, in = ParameterIn.QUERY)},
@@ -77,6 +76,7 @@ public class ResourceController {
                     @ApiResponse(responseCode = "400", description = "Invalid request data")
             }
     )
+    @GetMapping("/search")
     public ResponseEntity<List<BaseResourceResponseDto>> search(
             @NotBlank(message = "Param \"query\" should not be empty")
             @RequestParam String query,
@@ -86,7 +86,6 @@ public class ResourceController {
         return new ResponseEntity<>(searchedContent, HttpStatus.OK);
     }
 
-    @GetMapping("/move")
     @Operation(
             summary = "Move/rename resource",
             description = "Moves or renames a resource. Resource types must match: file can't be renamed to directory and vice versa.",
@@ -101,6 +100,7 @@ public class ResourceController {
                     @ApiResponse(responseCode = "409", description = "Resource with target path 'to' already exists")
             }
     )
+    @GetMapping("/move")
     public ResponseEntity<BaseResourceResponseDto> move(
             @NotBlank(message = "Param \"from\" should not be empty")
             @ValidPath(message = "Incorrect character in path: \\")
@@ -117,7 +117,6 @@ public class ResourceController {
         return new ResponseEntity<>(baseResourceResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/download")
     @Operation(
             summary = "Download resource",
             description = "Downloads a file from the server. Returns binary content with Content-Disposition: attachment.",
@@ -130,6 +129,7 @@ public class ResourceController {
                     @ApiResponse(responseCode = "404", description = "Resource not found")
             }
     )
+    @GetMapping("/download")
     public ResponseEntity<StreamingResponseBody> download(
             @NotBlank(message = "Param \"path\" should not be empty")
             @ValidPath(message = "Incorrect character in path: \\")
@@ -145,7 +145,6 @@ public class ResourceController {
                 .body(streamResourceDto.body());
     }
 
-    @DeleteMapping
     @Operation(
             summary = "Delete resource",
             parameters = {@Parameter(name = "path", in = ParameterIn.QUERY)},
@@ -155,6 +154,7 @@ public class ResourceController {
                     @ApiResponse(responseCode = "404", description = "Resource not found")
             }
     )
+    @DeleteMapping
     public ResponseEntity<Void> delete(
             @RequestParam
             @NotBlank(message = "Param \"path\" should not be empty")
@@ -167,7 +167,6 @@ public class ResourceController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
     @Operation(
             summary = "Get resources details",
             parameters = {@Parameter(name = "path", in = ParameterIn.QUERY)},
@@ -177,6 +176,7 @@ public class ResourceController {
                     @ApiResponse(responseCode = "404", description = "Resource not found")
             }
     )
+    @GetMapping
     public ResponseEntity<BaseResourceResponseDto> get(
             @RequestParam
             @NotBlank(message = "Param 'path' should not be empty")

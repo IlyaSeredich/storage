@@ -35,7 +35,6 @@ import java.util.List;
 public class DirectoryController {
     private final ResourceService resourceService;
 
-    @PostMapping
     @Operation(
             summary = "Create new directory",
             parameters = {
@@ -47,6 +46,7 @@ public class DirectoryController {
                     @ApiResponse(responseCode = "404", description = "Parent path not found")
             }
     )
+    @PostMapping
     public ResponseEntity<BaseResourceResponseDto> create(
             @RequestParam
             @NotBlank(message = "Param \"path\" should not be empty")
@@ -60,7 +60,6 @@ public class DirectoryController {
         return new ResponseEntity<>(createDirectoryResponseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping
     @Operation(
             summary = "Get directory content",
             parameters = {@Parameter(name = "path", in = ParameterIn.QUERY)},
@@ -71,6 +70,7 @@ public class DirectoryController {
             }
 
     )
+    @GetMapping
     public ResponseEntity<List<BaseResourceResponseDto>> get(
             @RequestParam
             @NotBlank(message = "Param \"path\" should not be empty")

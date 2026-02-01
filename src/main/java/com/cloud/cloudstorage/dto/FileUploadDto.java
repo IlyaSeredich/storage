@@ -18,7 +18,7 @@ import java.util.List;
 public class FileUploadDto {
 
     @Schema(
-            description = "Uploading resource. Must be not empty",
+            description = "Uploading resource. Must not be empty",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotEmpty(message = "Uploading resource must not be empty")
